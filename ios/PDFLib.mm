@@ -21,11 +21,12 @@ RCT_EXPORT_MODULE()
 
 RCT_REMAP_METHOD(createPDF,
                  :(NSDictionary*)documentActions
+                 :(NSString*)password
                  createPDFResolve:(RCTPromiseResolveBlock)resolve
                  createPDFReject:(RCTPromiseRejectBlock)reject)
 {
     try {
-        NSString* path = PDFWriterFactory::create(documentActions);
+        NSString* path = PDFWriterFactory::create(documentActions, password);
         if (path == nil)
         {
             reject(@"error", @"Error generating PDF!", nil);

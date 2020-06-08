@@ -12,7 +12,7 @@ private:
     void modifyPages (NSArray* pageActions);
     
 public:
-    static NSString* create (NSDictionary* pages);
+    static NSString* create (NSDictionary* pages, NSString* password);
     static NSString* modify (NSDictionary* pages);
     
 };

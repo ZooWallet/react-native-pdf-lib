@@ -4,7 +4,7 @@ package com.hopding.pdflib;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 import android.util.Log;
 
 import com.facebook.react.bridge.NoSuchKeyException;
@@ -50,9 +50,9 @@ public class PDFLibModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void createPDF(ReadableMap documentActions, Promise promise) {
+  public void createPDF(ReadableMap documentActions, String password, Promise promise) {
     try {
-      PDDocument document = PDDocumentFactory.create(documentActions);
+      PDDocument document = PDDocumentFactory.create(documentActions, password);
       promise.resolve(PDDocumentFactory.write(document, documentActions.getString("path")));
     } catch (NoSuchKeyException e) {
       e.printStackTrace();

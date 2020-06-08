@@ -6,14 +6,18 @@ PDFWriterFactory::PDFWriterFactory (PDFWriter* pdfWriter) {
     this->pdfWriter = pdfWriter;
 }
 
-NSString* PDFWriterFactory::create (NSDictionary* documentActions) {
+NSString* PDFWriterFactory::create (NSDictionary* documentActions, NSString* password) {
     NSString *path = documentActions[@"path"];
     NSLog(@"%@%@", @"Creating document at: ", path);
     PDFWriter pdfWriter;
     EStatusCode esc;
     PDFWriterFactory factory(&pdfWriter);
     
-    esc = pdfWriter.StartPDF(path.UTF8String, ePDFVersion13);
+    esc = pdfWriter.StartPDF(
+        path.UTF8String,
+        ePDFVersion13,
+        LogConfiguration::DefaultLogConfiguration(),
+        PDFCreationSettings(true,true,EncryptionOptions(true, password.UTF8String, 0, "")));
     if (esc == EStatusCode::eFailure) {
         return nil;
     }

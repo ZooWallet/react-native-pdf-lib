@@ -5,7 +5,10 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.pdmodel.PDPage;
-
+import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission;
+import com.tom_roush.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import java.security.Security;
 import java.io.File;
 import java.io.IOException;
 
@@ -25,11 +28,28 @@ public class PDDocumentFactory {
     }
 
             /* ----- Factory methods ----- */
-    public static PDDocument create(ReadableMap documentActions) throws NoSuchKeyException, IOException {
+    public static PDDocument create(ReadableMap documentActions, String password) throws NoSuchKeyException, IOException {
+        int keyLength = 128; // 128 bit is the highest currently supported
+
+        // Limit permissions of those without the password
+        AccessPermission ap = new AccessPermission();
+        ap.setCanPrint(false);
+
+        // Sets the owner password and user password
+        StandardProtectionPolicy spp = new StandardProtectionPolicy(password, "hi", ap);
+
+        // Setups up the encryption parameters
+        spp.setEncryptionKeyLength(keyLength);
+        spp.setPermissions(ap);
+        BouncyCastleProvider provider = new BouncyCastleProvider();
+        Security.addProvider(provider);
+
         PDDocument document = new PDDocument();
         PDDocumentFactory factory = new PDDocumentFactory(document, documentActions);
 
         factory.addPages(documentActions.getArray("pages"));
+        document.protect(spp); // Apply the protections to the PDF
+
         return document;
     }
 
